@@ -5,25 +5,47 @@
     <title>Redirecting to SEDCO Capital...</title>
     <meta name="description" content="Download the SEDCO Capital App">
     
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-MDCC18QJ34"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      // We use 'beacon' to ensure the data is sent even during a fast redirect
+      gtag('config', 'G-MDCC18QJ34', { 'transport_type': 'beacon' });
+    </script>
+
     <script>
         function redirect() {
             var userAgent = navigator.userAgent || navigator.vendor || window.opera;
             
-            // Your Store Links
             var iosLink = "https://apps.apple.com/us/app/sedco-capital/id6746379276";
             var androidLink = "https://play.google.com/store/apps/details?id=com.sarmad.sedco";
             var webLink = "https://app.sedcocapital.com/#/auth";
 
-            // Logic to detect device
+            var targetLink = webLink; 
+
             if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) {
-                window.location.replace(iosLink);
+                targetLink = iosLink;
             } else if (/android/i.test(userAgent)) {
-                window.location.replace(androidLink);
-            } else {
-                window.location.replace(webLink);
+                targetLink = androidLink;
             }
+
+            // Log the custom event 'store_redirect'
+            gtag('event', 'store_redirect', {
+                'event_category': 'Engagement',
+                'event_label': targetLink,
+                'event_callback': function() {
+                    window.location.replace(targetLink);
+                }
+            });
+
+            // Fail-safe: if GA doesn't load in 1.5 seconds, redirect anyway
+            setTimeout(function() {
+                window.location.replace(targetLink);
+            }, 1500);
         }
-        // Run redirect immediately
+
         window.onload = redirect;
     </script>
 </head>
